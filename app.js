@@ -1,18 +1,32 @@
 require("dotenv").config();
-const express = require("express");
-const bodyParser = require("body-parser");
+const express = require("express"); // import express module
+const bodyParser = require("body-parser"); // import body-paser
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const passport = require("passport");
+const passport = require("passport"); //Passport is an authentication middleware for Node that authenticates requests
 const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require("passport-google-oauth20").Strategy; // used to set up google auth
 const findOrCreate = require("mongoose-findorcreate"); // used with the google auth. find or create a user google id
 
+/*The app object conventionally denotes the Express application.
+ Create it by calling the top-level express() function exported by the Express module:
+  */
 const app = express();
 
+/*serve static files such as images, CSS files, and JavaScript files,
+ use the express.static built-in middleware function in Express.
+  */
 app.use(express.static("public"));
+
+/* This code also sets EJS as the view engine for the Express application using:
+This enables res.render() to look in a 'views' folder for the view templates and partials(reusable codes)  */
 app.set("view engine", "ejs");
+
+/*this parse an incoming request from the form data, create 'this' body object
+and fill it with data. else it will be difficult to manage data
+When set to true, then deflated (compressed) bodies will be inflated; when false, deflated bodies are rejected. Defaults to true.
+ */
 app.use(
   bodyParser.urlencoded({
     extended: true,
@@ -20,16 +34,22 @@ app.use(
 );
 
 //set up session to use express-session
+// because it is not secure https yet, we set to false
+// If secure is set, and you access your site over HTTP, the cookie will not be set.
 app.use(
   session({
-    secret: "Our secrete.",
+    secret: "Our secrets.",
     resave: false,
     saveUninitialized: false,
   })
 );
 
 //initialize passport and use session
+//passport.initialize() initialises the authentication module.
 app.use(passport.initialize());
+/*passport.session() is another middleware that alters the request object 
+and change the 'user' value that is currently the session id (from the client cookie)
+ into the true deserialized user object. */
 app.use(passport.session());
 
 //connection url
@@ -48,6 +68,7 @@ mongoose
 mongoose.set("useCreateIndex", true); // this is to stop deprecation warning for using external library
 
 //create schema i.e the datatype in each column of a model(table like in sql)
+//We define a schema to decide the properties of the object, including default values, data types, if required, etc.
 const userSchema = new mongoose.Schema({
   email: String, //user's email
   password: String, //users password
@@ -66,15 +87,16 @@ passport.deserializeUser(function (user, cb) {
 });
 
 //OR alternatively
-/*   passport.serializeUser(function(user, done) {
-       done(null, user.id);
-     });
-  
-     passport.deserializeUser(function(id, done) {
-       User.findById(id, function(err, user) {
-         done(err, user);
-       });
-     });
+/*  passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (user, done) {
+    //If using Mongoose with MongoDB; if other you will need JS specific to that schema.
+    User.findById(user.id, function (err, user) {
+        done(err, user);
+    });
+});
 */
 
 //google auth. callbackURL is the Authorized redirect URI. userProfileURL retrieves user password from their google userinfo.
