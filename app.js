@@ -134,3 +134,69 @@ app.get(
     res.redirect("/secrets");
   }
 );
+// user login using passord and username(email) and redirect to secret page.
+app.post("/login", (req, res) => {
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  req.login(user, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      passport.authenticate("local")(req, res, function () {
+        res.redirect("/secrets");
+      });
+    }
+  });
+});
+
+app.listen(3000, function () {
+  console.log("server started on port 3000.");
+});
+
+//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
+app.post("/register", (req, res) => {
+  User.register(
+    { username: req.body.username },
+    req.body.password,
+    function (err, user) {
+      if (err) {
+        console.log(err);
+        res.redirect("/register");
+      } else {
+        passport.authenticate("local")(req, res, function () {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  );
+});
+
+// Log out, deauthenticate user and end session.
+app.get("/logout", function (req, res) {
+  //res.redirect("/");
+  //Or
+  //req.logout();
+  //Or
+  res.render("home");
+});
+
+//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
+app.post("/register", (req, res) => {
+  User.register(
+    { username: req.body.username },
+    req.body.password,
+    function (err, user) {
+      if (err) {
+        console.log(err);
+        res.redirect("/register");
+      } else {
+        passport.authenticate("local")(req, res, function () {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  );
+});
