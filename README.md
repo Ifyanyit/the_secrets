@@ -93,4 +93,4 @@ This project is [MIT](./MIT.md) licensed.
 The Secret is licensed under the MIT License. See the LICENSE file for details.
 
 Contact
-If you have any questions or concerns, please contact the project owner at your-email@example.com.
+If you have any questions or concerns, please contact the project owner at carensiya5@gmail.com
