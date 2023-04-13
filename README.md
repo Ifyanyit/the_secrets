@@ -60,9 +60,9 @@ Contributions, issues, and feature requests are welcome!
 - LinkedIn: [@carensiya](www.linkedin.com/in/caren-siya-a89712180)
 
 👤 **Brian Kipngeno**
-- GitHub: [@brainkipngeno ](https://github.com/yobwee-zy)
-- Twitter: [@brainkipngeno](https://twitter.com/)
-- LinkedIn: [@brainkipngeno](www.linkedin.com/in/)
+- GitHub: [@briankipngeno ](https://github.com/yobwee-zy)
+- Twitter: [@briankipngeno](https://twitter.com/)
+- LinkedIn: [@briankipngeno](www.linkedin.com/in/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
