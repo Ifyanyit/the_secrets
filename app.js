@@ -171,6 +171,10 @@ app.get("/submit", function (req, res) {
   }
 });
 
+app.get("/register", function (req, res) {
+  res.render("register");
+});
+
 app.post("/submit", function (req, res) {
   const submittedSecret = req.body.secret;
 
