@@ -119,11 +119,19 @@ passport.use(
   )
 );
 
+app.get("/", function (req, res) {
+  res.render("home");
+});
+
 // sign up with google from the client section on clicking the button. A pop up that allows to sign up.
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile"] }) // User's profile on google to authenticate
 );
+
+app.get("/login", function (req, res) {
+  res.render("login");
+});
 
 //the route we typed on our google dashboard. redirect from 'app.get("/auth/google" ' above.
 app.get(
@@ -135,6 +143,26 @@ app.get(
   }
 );
 
+// Use if user is to login, it finds and render secret page.
+app.get("/secrets", function (req, res) {
+  User.find({ secret: { $ne: null } }, function (err, foundUsersSecret) {
+    //ne means not equal to null
+    if (err) {
+      console.log(er);
+    } else {
+      if (foundUsersSecret) {
+        res.render("secrets", { UserWithSecrets: foundUsersSecret });
+      }
+    }
+  });
+
+  // if (req.isAuthenticated()){
+  //     res.render("secrets");
+  // } else {
+  //     res.redirect("/login");
+  // }
+});
+
 app.get("/submit", function (req, res) {
   if (req.isAuthenticated()) {
     res.render("submit");
@@ -145,4 +173,101 @@ app.get("/submit", function (req, res) {
 
 app.get("/register", function (req, res) {
   res.render("register");
+});
+
+app.post("/submit", function (req, res) {
+  const submittedSecret = req.body.secret;
+
+  User.findById(req.user.id, function (err, foundUser) {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundUser) {
+        foundUser.secret = submittedSecret;
+        foundUser.save(function () {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  });
+});
+
+// Log out, deauthenticate user and end session.
+app.get("/logout", function (req, res) {
+  //res.redirect("/");
+  //Or
+  //req.logout();
+  //Or
+  res.render("home");
+});
+
+//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
+app.post("/register", (req, res) => {
+  User.register(
+    { username: req.body.username },
+    req.body.password,
+    function (err, user) {
+      if (err) {
+        console.log(err);
+        res.redirect("/register");
+      } else {
+        passport.authenticate("local")(req, res, function () {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  );
+});
+
+app.get("/register", function (req, res) {
+  res.render("register");
+});
+
+// user login using passord and username(email) and redirect to secret page.
+app.post("/login", (req, res) => {
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  req.login(user, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      passport.authenticate("local")(req, res, function () {
+        res.redirect("/secrets");
+      });
+    }
+  });
+});
+
+app.listen(3000, function () {
+  console.log("server started on port 3000.");
+});
+
+//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
+app.post("/register", (req, res) => {
+  User.register(
+    { username: req.body.username },
+    req.body.password,
+    function (err, user) {
+      if (err) {
+        console.log(err);
+        res.redirect("/register");
+      } else {
+        passport.authenticate("local")(req, res, function () {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  );
+});
+
+// Log out, deauthenticate user and end session.
+app.get("/logout", function (req, res) {
+  //res.redirect("/");
+  //Or
+  //req.logout();
+  //Or
+  res.render("home");
 });
