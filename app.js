@@ -241,9 +241,6 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.listen(3000, function () {
-  console.log("server started on port 3000.");
-});
 
 //First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
 app.post("/register", (req, res) => {
@@ -270,4 +267,9 @@ app.get("/logout", function (req, res) {
   //req.logout();
   //Or
   res.render("home");
+});
+
+
+app.listen(3000, function () {
+  console.log("server started on port 3000.");
 });
