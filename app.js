@@ -203,6 +203,8 @@ app.get("/logout", function (req, res) {
 
 //First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
 app.post("/register", (req, res) => {
+  // register method 'register()' comes from passport local mongoose package.
+  // It helps us to handles creating and saving users and interacts with mangoose directly
   User.register(
     { username: req.body.username },
     req.body.password,
@@ -211,6 +213,7 @@ app.post("/register", (req, res) => {
         console.log(err);
         res.redirect("/register");
       } else {
+        // the function here will only trigger if authnticated by passport
         passport.authenticate("local")(req, res, function () {
           res.redirect("/secrets");
         });
@@ -241,7 +244,6 @@ app.post("/login", (req, res) => {
   });
 });
 
-
 //First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
 app.post("/register", (req, res) => {
   User.register(
@@ -268,7 +270,6 @@ app.get("/logout", function (req, res) {
   //Or
   res.render("home");
 });
-
 
 app.listen(3000, function () {
   console.log("server started on port 3000.");
