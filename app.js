@@ -123,15 +123,19 @@ app.get("/", function (req, res) {
   res.render("home");
 });
 
+app.get("/login", function (req, res) {
+  res.render("login");
+});
+
+app.get("/register", function (req, res) {
+  res.render("register");
+});
+
 // sign up with google from the client section on clicking the button. A pop up that allows to sign up.
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile"] }) // User's profile on google to authenticate
 );
-
-app.get("/login", function (req, res) {
-  res.render("login");
-});
 
 //the route we typed on our google dashboard. redirect from 'app.get("/auth/google" ' above.
 app.get(
@@ -142,6 +146,45 @@ app.get(
     res.redirect("/secrets");
   }
 );
+
+//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
+app.post("/register", (req, res) => {
+  // register method 'register()' comes from passport local mongoose package.
+  // It helps us to handles creating and saving users and interacts with mangoose directly
+  User.register(
+    { username: req.body.username },
+    req.body.password,
+    function (err, user) {
+      if (err) {
+        console.log(err);
+        res.redirect("/register");
+      } else {
+        // the function here will only trigger if authnticated by passport
+        passport.authenticate("local")(req, res, function () {
+          res.redirect("/secrets");
+        });
+      }
+    }
+  );
+});
+
+// user login using passord and username(email) and redirect to secret page.
+app.post("/login", (req, res) => {
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  req.login(user, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      passport.authenticate("local")(req, res, function () {
+        res.redirect("/secrets");
+      });
+    }
+  });
+});
 
 // Use if user is to login, it finds and render secret page.
 app.get("/secrets", function (req, res) {
@@ -171,10 +214,6 @@ app.get("/submit", function (req, res) {
   }
 });
 
-app.get("/register", function (req, res) {
-  res.render("register");
-});
-
 app.post("/submit", function (req, res) {
   const submittedSecret = req.body.secret;
 
@@ -190,76 +229,6 @@ app.post("/submit", function (req, res) {
       }
     }
   });
-});
-
-// Log out, deauthenticate user and end session.
-app.get("/logout", function (req, res) {
-  //res.redirect("/");
-  //Or
-  //req.logout();
-  //Or
-  res.render("home");
-});
-
-//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
-app.post("/register", (req, res) => {
-  // register method 'register()' comes from passport local mongoose package.
-  // It helps us to handles creating and saving users and interacts with mangoose directly
-  User.register(
-    { username: req.body.username },
-    req.body.password,
-    function (err, user) {
-      if (err) {
-        console.log(err);
-        res.redirect("/register");
-      } else {
-        // the function here will only trigger if authnticated by passport
-        passport.authenticate("local")(req, res, function () {
-          res.redirect("/secrets");
-        });
-      }
-    }
-  );
-});
-
-app.get("/register", function (req, res) {
-  res.render("register");
-});
-
-// user login using passord and username(email) and redirect to secret page.
-app.post("/login", (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password,
-  });
-
-  req.login(user, function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      passport.authenticate("local")(req, res, function () {
-        res.redirect("/secrets");
-      });
-    }
-  });
-});
-
-//First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
-app.post("/register", (req, res) => {
-  User.register(
-    { username: req.body.username },
-    req.body.password,
-    function (err, user) {
-      if (err) {
-        console.log(err);
-        res.redirect("/register");
-      } else {
-        passport.authenticate("local")(req, res, function () {
-          res.redirect("/secrets");
-        });
-      }
-    }
-  );
 });
 
 // Log out, deauthenticate user and end session.
