@@ -80,6 +80,13 @@ const userSchema = new mongoose.Schema({
 userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate); // used for google authentication
 
+// Works for all
+passport.serializeUser(function (user, cb) {
+  process.nextTick(function () {
+    cb(null, { id: user.id, username: user.username, name: user.name });
+  });
+});
+
 passport.deserializeUser(function (user, cb) {
   process.nextTick(function () {
     return cb(null, user);
