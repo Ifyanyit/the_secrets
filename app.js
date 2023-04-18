@@ -80,6 +80,10 @@ const userSchema = new mongoose.Schema({
 userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate); // used for google authentication
 
+// We are creating a table/collection of users
+//Model or table or collection. must be singlar word and starts with capital letter i.e User instead of users.
+const User = new mongoose.model("User", userSchema);
+
 // Works for all
 passport.serializeUser(function (user, cb) {
   process.nextTick(function () {
