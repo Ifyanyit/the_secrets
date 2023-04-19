@@ -1,3 +1,4 @@
+//jshint esversion:6
 require("dotenv").config();
 const express = require("express"); // import express module
 const bodyParser = require("body-parser"); // import body-paser
@@ -53,7 +54,7 @@ and change the 'user' value that is currently the session id (from the client co
 app.use(passport.session());
 
 //connection url
-const url = "mongodb://127.0.0.1:27017/userDB";
+const url = "mongodb://127.0.0.1:27017/fish";
 
 // connect to Database
 mongoose
@@ -70,10 +71,10 @@ mongoose.set("useCreateIndex", true); // this is to stop deprecation warning for
 //create schema i.e the datatype in each column of a model(table like in sql)
 //We define a schema to decide the properties of the object, including default values, data types, if required, etc.
 const userSchema = new mongoose.Schema({
-  email: String, //user's email
-  password: String, //users password
-  googleId: String, // to help fine user registered with google auth
-  secret: String, // save users secret
+  email: { type: String }, //user's email
+  password: { type: String }, //users password
+  googleId: { type: String }, // to help fine user registered with google auth
+  secret: { type: String }, // save users secret
 });
 
 //Hash and salt the password and save in the database. add plugin. This salts and hashs authomatically.
@@ -83,6 +84,12 @@ userSchema.plugin(findOrCreate); // used for google authentication
 // We are creating a table/collection of users
 //Model or table or collection. must be singlar word and starts with capital letter i.e User instead of users.
 const User = new mongoose.model("User", userSchema);
+
+//passport local strategy to authentcate user using password and username
+//and serialize - creates cookie to save the password and username
+//and deserialize - crumbles the cookie when user logs out.
+// serialization and deserialization is only used when using sessions.
+passport.use(User.createStrategy());
 
 // Works for all
 passport.serializeUser(function (user, cb) {
@@ -97,18 +104,17 @@ passport.deserializeUser(function (user, cb) {
   });
 });
 
-//OR alternatively
-/*  passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
+// //OR alternatively
+// passport.serializeUser(function (user, done) {
+//   done(null, user.id);
+// });
 
-passport.deserializeUser(function (user, done) {
-    //If using Mongoose with MongoDB; if other you will need JS specific to that schema.
-    User.findById(user.id, function (err, user) {
-        done(err, user);
-    });
-});
-*/
+// passport.deserializeUser(function (user, done) {
+//   //If using Mongoose with MongoDB; if other you will need JS specific to that schema.
+//   User.findById(user.id, function (err, user) {
+//     done(err, user);
+//   });
+// });
 
 //google auth. callbackURL is the Authorized redirect URI. userProfileURL retrieves user password from their google userinfo.
 passport.use(
@@ -140,6 +146,10 @@ app.get("/login", function (req, res) {
 
 app.get("/register", function (req, res) {
   res.render("register");
+});
+
+app.get("/home", function (req, res) {
+  res.render("home");
 });
 
 // sign up with google from the client section on clicking the button. A pop up that allows to sign up.
@@ -197,12 +207,13 @@ app.post("/login", (req, res) => {
   });
 });
 
+//all logged in users see this page
 // Use if user is to login, it finds and render secret page.
 app.get("/secrets", function (req, res) {
   User.find({ secret: { $ne: null } }, function (err, foundUsersSecret) {
     //ne means not equal to null
     if (err) {
-      console.log(er);
+      console.log(err);
     } else {
       if (foundUsersSecret) {
         res.render("secrets", { UserWithSecrets: foundUsersSecret });
@@ -227,11 +238,14 @@ app.get("/submit", function (req, res) {
 
 app.post("/submit", function (req, res) {
   const submittedSecret = req.body.secret;
-
-  User.findById(req.user.id, function (err, foundUser) {
+  const id = req.user.id;
+  User.findById(id, (err, foundUser) => {
     if (err) {
       console.log(err);
+      res.redirect("/login");
     } else {
+      console.log(foundUser);
+      // console.log(submittedSecret);
       if (foundUser) {
         foundUser.secret = submittedSecret;
         foundUser.save(function () {
@@ -240,6 +254,26 @@ app.post("/submit", function (req, res) {
       }
     }
   });
+
+  // const submittedSecret = req.body.secret;
+
+  // User.findById(req.user.id, function (err, foundUser) {
+  //   if (err) {
+  //     console.log(err);
+  //     res.redirect("/login");
+  //   } else {
+  //     console.log(submittedSecret);
+  //     console.log(req.user);
+  //     console.log(req.user.id);
+  //     console.log(foundUser);
+  //     if (foundUser) {
+  //       console.log(foundUser);
+  //       foundUser.secret = submittedSecret;
+  //       foundUser.save();
+  //       res.redirect("/secrets");
+  //     }
+  //   }
+  // });
 });
 
 // Log out, deauthenticate user and end session.
