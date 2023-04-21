@@ -20,7 +20,7 @@ Before you can run The Secret, you need to have the following software installed
   ```
 2. Navigate to the project directory using cd `the-secret`
 3. Install dependencies using `npm install`
-4. Start the server using `npm start`
+4. Start the server using `node app.js` or `nodemon app.js`
 
 <h2>Usage </h2>
 
@@ -93,4 +93,4 @@ This project is [MIT](./MIT.md) licensed.
 The Secret is licensed under the MIT License. See the LICENSE file for details.
 
 Contact
-If you have any questions or concerns, please contact the project owner at carensiya5@gmail.com
+If you have any questions or concerns, please contact the project owner at carensiya5@gmail.com or ngeneifyanyi97@gmail.com

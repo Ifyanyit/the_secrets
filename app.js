@@ -254,26 +254,6 @@ app.post("/submit", function (req, res) {
       }
     }
   });
-
-  // const submittedSecret = req.body.secret;
-
-  // User.findById(req.user.id, function (err, foundUser) {
-  //   if (err) {
-  //     console.log(err);
-  //     res.redirect("/login");
-  //   } else {
-  //     console.log(submittedSecret);
-  //     console.log(req.user);
-  //     console.log(req.user.id);
-  //     console.log(foundUser);
-  //     if (foundUser) {
-  //       console.log(foundUser);
-  //       foundUser.secret = submittedSecret;
-  //       foundUser.save();
-  //       res.redirect("/secrets");
-  //     }
-  //   }
-  // });
 });
 
 // Log out, deauthenticate user and end session.
