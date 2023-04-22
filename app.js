@@ -105,7 +105,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/secrets",
+      callbackURL: "http://localhost:5040/auth/google/secrets",
       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     //it sends accessToken and user profile which contains user profile id.
@@ -237,8 +237,9 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.listen(3000, function () {
-  console.log("server started on port 3000.");
+const port = process.env.PORT || 5040
+app.listen(port, function () {
+  console.log("server started on port 5040.");
 });
 
 //First time registration. authenticate using passport. redirect user to secret page if authenticated else register page
