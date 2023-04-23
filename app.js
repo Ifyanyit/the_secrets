@@ -54,7 +54,7 @@ and change the 'user' value that is currently the session id (from the client co
 app.use(passport.session());
 
 //connection url
-const url = "mongodb://127.0.0.1:27017/fish";
+const url = "mongodb://127.0.0.1:27017/CibDB";
 
 // connect to Database
 mongoose
@@ -74,7 +74,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String }, //user's email
   password: { type: String }, //users password
   googleId: { type: String }, // to help fine user registered with google auth
-  secret: { type: String }, // save users secret
+  secret: [String], // save users secret
+  createdOn: { type: Date, default: Date.now },
+  dateCreated: String,
+  timeCreated: String,
 });
 
 //Hash and salt the password and save in the database. add plugin. This salts and hashs authomatically.
@@ -150,6 +153,10 @@ app.get("/register", function (req, res) {
 
 app.get("/home", function (req, res) {
   res.render("home");
+});
+
+app.get("/about", function (req, res) {
+  res.render("about");
 });
 
 // sign up with google from the client section on clicking the button. A pop up that allows to sign up.
@@ -238,6 +245,9 @@ app.get("/submit", function (req, res) {
 
 app.post("/submit", function (req, res) {
   const submittedSecret = req.body.secret;
+  const date = new Date();
+  const submittedDate = date.toDateString();
+  const submittedTime = date.toLocaleTimeString();
   const id = req.user.id;
   User.findById(id, (err, foundUser) => {
     if (err) {
@@ -247,7 +257,10 @@ app.post("/submit", function (req, res) {
       console.log(foundUser);
       // console.log(submittedSecret);
       if (foundUser) {
-        foundUser.secret = submittedSecret;
+        foundUser.secret.unshift(submittedSecret);
+        // foundUser.secret = submittedSecret;
+        foundUser.dateCreated = submittedDate;
+        foundUser.timeCreated = submittedTime;
         foundUser.save(function () {
           res.redirect("/secrets");
         });
