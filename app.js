@@ -54,7 +54,7 @@ and change the 'user' value that is currently the session id (from the client co
 app.use(passport.session());
 
 //connection url
-const url = "mongodb://127.0.0.1:27017/fish";
+const url = "mongodb://127.0.0.1:27017/my_DB";
 
 // connect to Database
 mongoose
@@ -122,7 +122,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/secrets",
+      callbackURL: "http://localhost:5040/auth/google/secrets",
       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     //it sends accessToken and user profile which contains user profile id.
@@ -265,6 +265,6 @@ app.get("/logout", function (req, res) {
   res.render("home");
 });
 
-app.listen(3000, function () {
-  console.log("server started on port 3000.");
+app.listen(5040, function () {
+  console.log("server started on port 5040.");
 });
