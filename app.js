@@ -54,11 +54,11 @@ and change the 'user' value that is currently the session id (from the client co
 app.use(passport.session());
 
 //connection url
-<<<<<<< HEAD
-const url = "mongodb://127.0.0.1:27017/my_DB";
-=======
+//<<<<<<< HEAD
+//const url = "mongodb://127.0.0.1:27017/my_DB";
+//=======
 const url = "mongodb://127.0.0.1:27017/CibDB";
->>>>>>> d90b325c059174dac118e513e8c54a1660124696
+//>>>>>>> d90b325c059174dac118e513e8c54a1660124696
 
 // connect to Database
 mongoose
